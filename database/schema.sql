@@ -5,13 +5,13 @@ CREATE TABLE `users` (
   `contact_phone` varchar(255),
   `password_hash` varchar(255),
   `role` enum(patient,doctor,donor,ngo,admin,hospital),
-  `specialty` varchar(255),
+  `specialty` varchar(255), //doctor specialty (optional)
   `language_pref` varchar(255),
   `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp,
-  `official_document_url` varchar(255),
-  `registration_number` varchar(255),
-  `website_url` varchar(255),
+  `official_document_url` varchar(255),//doctor official document url (optional)
+  `registration_number` varchar(255),//doctor registration number (optional)
+  `website_url` varchar(255),//NGOs /hospitals  website url (optional)
   `verification_status` enum(none,requested,verified,rejected) DEFAULT 'none',
   `verification_requested_at` timestamp,
   `verified_at` timestamp
@@ -292,6 +292,14 @@ CREATE TABLE `surgical_missions` (
   `status` enum(upcoming,ongoing,completed,cancelled) DEFAULT 'upcoming',
   `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp
+);
+
+CREATE TABLE `token_blacklist` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `token` varchar(500) UNIQUE NOT NULL,
+  `expires_at` timestamp NOT NULL,
+  `blacklisted_at` timestamp DEFAULT CURRENT_TIMESTAMP,
+  INDEX `idx_expires_at` (`expires_at`)
 );
 
 ALTER TABLE `consultations` ADD FOREIGN KEY (`patient_id`) REFERENCES `users` (`id`);
