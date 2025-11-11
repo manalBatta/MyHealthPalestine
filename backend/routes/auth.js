@@ -45,15 +45,15 @@ router.post("/register", async (req, res) => {
     // Set default role to 'patient' if not provided
     const userRole = role || "patient";
 
+    // Prevent admin role registration (admin accounts must be created by other admins)
+    if (userRole === "admin") {
+      return res.status(403).json({
+        error: "Admin role cannot be registered through public registration",
+      });
+    }
+
     // Validate role is one of the allowed values
-    const allowedRoles = [
-      "patient",
-      "doctor",
-      "donor",
-      "ngo",
-      "admin",
-      "hospital",
-    ];
+    const allowedRoles = ["patient", "doctor", "donor", "ngo", "hospital"];
     if (!allowedRoles.includes(userRole)) {
       return res.status(400).json({
         error: `Invalid role. Must be one of: ${allowedRoles.join(", ")}`,
