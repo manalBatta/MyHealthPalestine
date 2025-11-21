@@ -31,6 +31,7 @@ setInterval(cleanupExpiredTokens, 60 * 60 * 1000);
 // Routes
 const usersRoutes = require("./routes/users.js");
 const consultationsRoutes = require("./routes/consultations.js");
+const mentalHealthRoutes = require("./routes/mentalHealthConsultations.js");
 const authRoutes = require("./routes/auth.js");
 
 // Use base_url in the route paths
@@ -38,6 +39,7 @@ const baseUrlPath = new URL(global.base_url).pathname.replace(/\/$/, "");
 
 app.use(`${baseUrlPath}/users`, usersRoutes);
 app.use(`${baseUrlPath}/consultations`, consultationsRoutes);
+app.use(`${baseUrlPath}/mental-health-consultations`, mentalHealthRoutes);
 app.use(`${baseUrlPath}/auth`, authRoutes);
 
 app.listen(port, () => {

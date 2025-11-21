@@ -166,6 +166,209 @@ router.post("/", authenticateToken, async (req, res) => {
   }
 });
 
+// PUT /consultations/:id - Update consultation status/notes
+router.put("/:id", authenticateToken, async (req, res) => {
+  const consultationId = req.params.id;
+  const userId = req.user.id;
+  const userRole = req.user.role;
+  const { status, notes } = req.body;
+
+  // Only patients or doctors can update consultations
+  if (!["patient", "doctor"].includes(userRole)) {
+    return res.status(403).json({
+      error: "Only patients or doctors can update consultations",
+    });
+  }
+
+  try {
+    // Fetch consultation
+    const consultationResult = await new Promise((resolve, reject) => {
+      db.query(
+        "SELECT * FROM consultations WHERE id = ?",
+        [consultationId],
+        (err, results) => {
+          if (err) reject(err);
+          else resolve(results);
+        }
+      );
+    });
+
+    if (consultationResult.length === 0) {
+      return res.status(404).json({ error: "Consultation not found" });
+    }
+
+    const consultation = consultationResult[0];
+
+    const updates = [];
+    const values = [];
+
+    if (userRole === "patient") {
+      if (consultation.patient_id !== userId) {
+        return res
+          .status(403)
+          .json({ error: "You can only update your own consultations" });
+      }
+
+      if (notes !== undefined) {
+        return res
+          .status(400)
+          .json({ error: "Patients cannot update consultation notes" });
+      }
+
+      if (!status) {
+        return res.status(400).json({
+          error: "Status is required for patient updates",
+        });
+      }
+
+      const allowedStatus = ["cancelled"];
+      if (!allowedStatus.includes(status)) {
+        return res.status(400).json({
+          error: `Patients can only set status to: ${allowedStatus.join(", ")}`,
+        });
+      }
+
+      updates.push("status = ?");
+      values.push(status);
+    } else if (userRole === "doctor") {
+      if (consultation.doctor_id !== userId) {
+        return res
+          .status(403)
+          .json({ error: "You can only update your own consultations" });
+      }
+
+      const allowedStatus = ["confirmed", "completed", "cancelled"];
+      if (status !== undefined) {
+        if (!allowedStatus.includes(status)) {
+          return res.status(400).json({
+            error: `Doctors can only set status to: ${allowedStatus.join(
+              ", "
+            )}`,
+          });
+        }
+        updates.push("status = ?");
+        values.push(status);
+      }
+
+      if (notes !== undefined) {
+        updates.push("notes = ?");
+        values.push(notes);
+      }
+    }
+
+    if (updates.length === 0) {
+      return res.status(400).json({
+        error: "No valid fields to update",
+      });
+    }
+
+    updates.push("updated_at = NOW()");
+
+    values.push(consultationId);
+
+    await new Promise((resolve, reject) => {
+      db.query(
+        `UPDATE consultations SET ${updates.join(", ")} WHERE id = ?`,
+        values,
+        (err, results) => {
+          if (err) reject(err);
+          else resolve(results);
+        }
+      );
+    });
+
+    const updatedConsultation = await new Promise((resolve, reject) => {
+      db.query(
+        "SELECT * FROM consultations WHERE id = ?",
+        [consultationId],
+        (err, results) => {
+          if (err) reject(err);
+          else resolve(results[0]);
+        }
+      );
+    });
+
+    res.status(200).json({
+      message: "Consultation updated successfully",
+      consultation: updatedConsultation,
+    });
+  } catch (error) {
+    console.error("Update consultation error:", error);
+    res
+      .status(500)
+      .json({ error: "Internal server error during consultation update" });
+  }
+});
+
+// DELETE /consultations/:id - Admin only
+router.delete(
+  "/:id",
+  authenticateToken,
+  requireRole("admin"),
+  async (req, res) => {
+    const consultationId = req.params.id;
+    let connection;
+
+    try {
+      connection = await getConnection();
+      await queryConnection(connection, "START TRANSACTION");
+
+      const consultationResult = await queryConnection(
+        connection,
+        "SELECT id, slot_id FROM consultations WHERE id = ? FOR UPDATE",
+        [consultationId]
+      );
+
+      if (consultationResult.length === 0) {
+        await queryConnection(connection, "ROLLBACK");
+        return res.status(404).json({ error: "Consultation not found" });
+      }
+
+      const consultation = consultationResult[0];
+
+      await queryConnection(
+        connection,
+        "DELETE FROM consultations WHERE id = ?",
+        [consultationId]
+      );
+
+      if (consultation.slot_id) {
+        await queryConnection(
+          connection,
+          `UPDATE consultation_slots
+             SET is_booked = FALSE,
+                 consultation_id = NULL,
+                 updated_at = NOW()
+           WHERE id = ?`,
+          [consultation.slot_id]
+        );
+      }
+
+      await queryConnection(connection, "COMMIT");
+
+      res.status(200).json({
+        message: "Consultation deleted successfully",
+      });
+    } catch (error) {
+      if (connection) {
+        try {
+          await queryConnection(connection, "ROLLBACK");
+        } catch (rollbackError) {
+          console.error("Rollback error:", rollbackError);
+        }
+      }
+      console.error("Delete consultation error:", error);
+      res.status(500).json({
+        error: "Internal server error during consultation deletion",
+      });
+    } finally {
+      if (connection) {
+        connection.release();
+      }
+    }
+  }
+);
+
 // GET /consultations - Retrieve consultations for the authenticated user
 router.get("/", authenticateToken, (req, res) => {
   const userId = req.user.id;
