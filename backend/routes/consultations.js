@@ -277,6 +277,44 @@ router.put("/:id", authenticateToken, async (req, res) => {
       );
     });
 
+    // Create connection based on consultation type and status
+    const patientId = consultation.patient_id;
+    const doctorId = consultation.doctor_id;
+    const consultationMode = consultation.mode;
+
+    // For chat consultations: create connection when confirmed
+    // For other consultations: create connection when completed
+    if (
+      (consultationMode === "chat" && status === "confirmed") ||
+      (consultationMode !== "chat" && status === "completed")
+    ) {
+      // Check if connection already exists
+      const existingConnection = await new Promise((resolve, reject) => {
+        db.query(
+          "SELECT id FROM connections WHERE patient_id = ? AND doctor_id = ?",
+          [patientId, doctorId],
+          (err, results) => {
+            if (err) reject(err);
+            else resolve(results);
+          }
+        );
+      });
+
+      // Create connection if it doesn't exist
+      if (existingConnection.length === 0) {
+        await new Promise((resolve, reject) => {
+          db.query(
+            "INSERT INTO connections (patient_id, doctor_id, connected_at, status) VALUES (?, ?, NOW(), 'active')",
+            [patientId, doctorId],
+            (err, results) => {
+              if (err) reject(err);
+              else resolve(results);
+            }
+          );
+        });
+      }
+    }
+
     const updatedConsultation = await new Promise((resolve, reject) => {
       db.query(
         "SELECT * FROM consultations WHERE id = ?",
