@@ -1,0 +1,539 @@
+{
+	"info": {
+		"_postman_id": "health-guides-alerts-collection",
+		"name": "Health Guides & Public Health Alerts",
+		"description": "Postman collection for Health Guides and Public Health Alerts endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Health Guides",
+			"item": [
+				{
+					"name": "Create Health Guide",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{doctor-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"First Aid for Burns\",\n  \"category\": \"first_aid\",\n  \"description\": \"Comprehensive guide on how to treat burns at home. Includes immediate steps, when to seek medical help, and prevention tips.\",\n  \"media_url\": \"https://example.com/videos/burns-first-aid.mp4\",\n  \"language\": \"en\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/health-guides",
+							"host": ["{{base_url}}"],
+							"path": ["health-guides"]
+						},
+						"description": "Create a new health guide. Requires doctor, hospital, NGO, or admin role. Pending admin approval."
+					}
+				},
+				{
+					"name": "Create Health Guide (NGO)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{ngo-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Nutrition Guide for Children\",\n  \"category\": \"nutrition\",\n  \"description\": \"Essential nutrition information for children's healthy development. Includes meal planning, essential nutrients, and common dietary concerns.\",\n  \"language\": \"ar\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/health-guides",
+							"host": ["{{base_url}}"],
+							"path": ["health-guides"]
+						},
+						"description": "Create a new health guide by NGO."
+					}
+				},
+				{
+					"name": "List All Health Guides",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/health-guides",
+							"host": ["{{base_url}}"],
+							"path": ["health-guides"]
+						},
+						"description": "Get all health guides. Public sees only approved guides. Can filter by category, language, approved_only, created_by_me"
+					}
+				},
+				{
+					"name": "List Health Guides (Filtered by Category)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/health-guides?category=first_aid&language=en",
+							"host": ["{{base_url}}"],
+							"path": ["health-guides"],
+							"query": [
+								{
+									"key": "category",
+									"value": "first_aid"
+								},
+								{
+									"key": "language",
+									"value": "en"
+								}
+							]
+						},
+						"description": "Get health guides filtered by category and language"
+					}
+				},
+				{
+					"name": "List My Health Guides",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{doctor-token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/health-guides?created_by_me=true",
+							"host": ["{{base_url}}"],
+							"path": ["health-guides"],
+							"query": [
+								{
+									"key": "created_by_me",
+									"value": "true"
+								}
+							]
+						},
+						"description": "Get health guides created by the authenticated user (approved or not)"
+					}
+				},
+				{
+					"name": "Get Health Guide by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/health-guides/:id",
+							"host": ["{{base_url}}"],
+							"path": ["health-guides", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Get a single health guide by ID"
+					}
+				},
+				{
+					"name": "Update Health Guide",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{doctor-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"description\": \"Updated description with additional safety tips and emergency contact information.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/health-guides/:id",
+							"host": ["{{base_url}}"],
+							"path": ["health-guides", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Update a health guide. Only creator or admin can update. If creator updates approved guide, it resets to pending."
+					}
+				},
+				{
+					"name": "Approve Health Guide",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"approved\": true\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/health-guides/:id/approve",
+							"host": ["{{base_url}}"],
+							"path": ["health-guides", ":id", "approve"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Approve or reject a health guide. Admin only."
+					}
+				},
+				{
+					"name": "Delete Health Guide",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{doctor-token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/health-guides/:id",
+							"host": ["{{base_url}}"],
+							"path": ["health-guides", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Delete a health guide. Only creator or admin can delete."
+					}
+				}
+			],
+			"description": "Endpoints for managing health education guides"
+		},
+		{
+			"name": "Public Health Alerts",
+			"item": [
+				{
+					"name": "Create Public Health Alert (Admin)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Flu Season Alert\",\n  \"message\": \"High flu activity detected in the region. Please get vaccinated and practice good hygiene.\",\n  \"alert_type\": \"disease_outbreak\",\n  \"severity\": \"high\",\n  \"country\": \"Jordan\",\n  \"city\": \"Amman\",\n  \"expires_at\": \"2025-12-31T23:59:59Z\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/public-health-alerts",
+							"host": ["{{base_url}}"],
+							"path": ["public-health-alerts"]
+						},
+						"description": "Create a new public health alert. Requires doctor, hospital, NGO, or admin role. Immediately visible."
+					}
+				},
+				{
+					"name": "Create Public Health Alert (Doctor)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{doctor-token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Air Quality Warning\",\n  \"message\": \"Poor air quality detected. People with respiratory conditions should avoid outdoor activities.\",\n  \"alert_type\": \"air_quality\",\n  \"severity\": \"moderate\",\n  \"country\": \"Jordan\",\n  \"city\": \"Irbid\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/public-health-alerts",
+							"host": ["{{base_url}}"],
+							"path": ["public-health-alerts"]
+						},
+						"description": "Create a new public health alert by doctor."
+					}
+				},
+				{
+					"name": "List All Public Health Alerts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/public-health-alerts",
+							"host": ["{{base_url}}"],
+							"path": ["public-health-alerts"]
+						},
+						"description": "Get all public health alerts. Public sees only active, non-expired alerts. Can filter by alert_type, severity, country, city, is_active, active_only, my_alerts"
+					}
+				},
+				{
+					"name": "List Alerts (Filtered by Severity)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/public-health-alerts?severity=critical&country=Jordan",
+							"host": ["{{base_url}}"],
+							"path": ["public-health-alerts"],
+							"query": [
+								{
+									"key": "severity",
+									"value": "critical"
+								},
+								{
+									"key": "country",
+									"value": "Jordan"
+								}
+							]
+						},
+						"description": "Get alerts filtered by severity and country"
+					}
+				},
+				{
+					"name": "List Alerts (Filtered by Type and City)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/public-health-alerts?alert_type=disease_outbreak&city=Amman",
+							"host": ["{{base_url}}"],
+							"path": ["public-health-alerts"],
+							"query": [
+								{
+									"key": "alert_type",
+									"value": "disease_outbreak"
+								},
+								{
+									"key": "city",
+									"value": "Amman"
+								}
+							]
+						},
+						"description": "Get alerts filtered by alert_type and city"
+					}
+				},
+				{
+					"name": "List My Alerts",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{doctor-token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/public-health-alerts?my_alerts=true",
+							"host": ["{{base_url}}"],
+							"path": ["public-health-alerts"],
+							"query": [
+								{
+									"key": "my_alerts",
+									"value": "true"
+								}
+							]
+						},
+						"description": "Get alerts published by the authenticated user"
+					}
+				},
+				{
+					"name": "Get Public Health Alert by ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/public-health-alerts/:id",
+							"host": ["{{base_url}}"],
+							"path": ["public-health-alerts", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Get a single public health alert by ID"
+					}
+				},
+				{
+					"name": "Update Public Health Alert",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"is_active\": false,\n  \"message\": \"Updated message with new information and recommendations.\"\n}"
+						},
+						"url": {
+							"raw": "{{base_url}}/public-health-alerts/:id",
+							"host": ["{{base_url}}"],
+							"path": ["public-health-alerts", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Update a public health alert. Only creator or admin can update."
+					}
+				},
+				{
+					"name": "Delete Public Health Alert",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{admin_token}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/public-health-alerts/:id",
+							"host": ["{{base_url}}"],
+							"path": ["public-health-alerts", ":id"],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Delete a public health alert. Only creator or admin can delete."
+					}
+				}
+			],
+			"description": "Endpoints for managing public health alerts and notifications"
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:3000/healthpal",
+			"type": "string"
+		},
+		{
+			"key": "doctor-token",
+			"value": "your_doctor_jwt_token_here",
+			"type": "string"
+		},
+		{
+			"key": "ngo-token",
+			"value": "your_ngo_jwt_token_here",
+			"type": "string"
+		},
+		{
+			"key": "token",
+			"value": "your_patient_jwt_token_here",
+			"type": "string"
+		},
+		{
+			"key": "admin_token",
+			"value": "your_admin_jwt_token_here",
+			"type": "string"
+		}
+	]
+}
+

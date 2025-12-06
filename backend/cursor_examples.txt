@@ -893,3 +893,1003 @@ body:
 null
 
 ===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/support-groups
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+{
+
+  "title": "Chronic Pain Support Group",
+
+  "topic": "chronic_illness",
+
+  "description": "A supportive community for individuals living with chronic pain conditions. Share experiences, coping strategies, and receive guidance from our moderator.",
+
+  "mode": "online",
+
+  "meeting_link": "https://zoom.us/j/123456789",
+
+  "moderator_id": 9,
+
+  "max_members": 30
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/support-groups
+
+headers:
+
+  Authorization: Bearer <ngo_token>
+
+body:
+
+{
+
+  "title": "Trauma Recovery Circle",
+
+  "topic": "trauma",
+
+  "mode": "in_person",
+
+  "location": "Community Center, Room 5, 456 Main St",
+
+  "moderator_id": 9,
+
+  "max_members": 20
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/support-groups?topic=mental_health&mode=online
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/support-groups?my_groups=true
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/support-groups/1
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/support-groups/1
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+{
+
+  "description": "Updated description with new meeting schedule and guidelines.",
+
+  "max_members": 35
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: DELETE
+
+url: {{base_url}}/support-groups/1
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/support-group-members
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+{
+
+  "group_id": 1
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/support-group-members?group_id=1&active_only=true
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/support-group-members
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/support-group-members/1
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/support-group-members/1/leave
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: DELETE
+
+url: {{base_url}}/support-group-members/1
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/support-group-messages
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+{
+
+  "group_id": 1,
+
+  "message_text": "Hello everyone! I'm new to this group and looking forward to connecting with others who understand what I'm going through."
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/support-group-messages?group_id=1&page=1&limit=50
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/support-group-messages/1
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: DELETE
+
+url: {{base_url}}/support-group-messages/1
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/missions
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+{
+
+  "title": "Free Medical Checkup Mission",
+
+  "description": "A free medical checkup mission for underserved communities. We will provide basic health screenings, blood pressure checks, and consultations.",
+
+  "doctor_id": 9,
+
+  "ngo_id": 3,
+
+  "location": "Community Health Center, 123 Main Street",
+
+  "start_datetime": "2025-12-15T09:00:00Z",
+
+  "end_datetime": "2025-12-15T17:00:00Z",
+
+  "registration_expiration": "2025-12-10T23:59:59Z",
+
+  "slots_available": 50
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/missions
+
+headers:
+
+  Authorization: Bearer <ngo_token>
+
+body:
+
+{
+
+  "title": "Vaccination Drive",
+
+  "description": "Free vaccination drive for children and adults.",
+
+  "ngo_id": 3,
+
+  "location": "City Park, Central Area",
+
+  "start_datetime": "2025-11-20T08:00:00Z",
+
+  "end_datetime": "2025-11-20T16:00:00Z",
+
+  "slots_available": 100
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/missions?status=upcoming&doctor_id=9
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/missions?my_missions=true
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/missions/1
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/missions/1
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+{
+
+  "description": "Updated description with additional services.",
+
+  "slots_available": 60
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: DELETE
+
+url: {{base_url}}/missions/1
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/mission-registrations
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+{
+
+  "mission_id": 1
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/mission-registrations?mission_id=1&attended=false
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/mission-registrations
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/mission-registrations/1
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/mission-registrations/1/attendance
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+{
+
+  "attended": true
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: DELETE
+
+url: {{base_url}}/mission-registrations/1
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/surgical-missions
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+{
+
+  "title": "Free Cataract Surgery Mission",
+
+  "description": "Free cataract surgery for eligible patients. Pre-screening required.",
+
+  "doctor_id": 9,
+
+  "ngo_id": 3,
+
+  "location": "City Hospital, Surgical Wing",
+
+  "start_datetime": "2025-12-01T08:00:00Z",
+
+  "end_datetime": "2025-12-05T18:00:00Z"
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/surgical-missions?status=upcoming&doctor_id=9
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/surgical-missions/1
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/surgical-missions/1
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+{
+
+  "description": "Updated description with eligibility criteria.",
+
+  "status": "ongoing"
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: DELETE
+
+url: {{base_url}}/surgical-missions/1
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/health-guides
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+{
+
+  "title": "First Aid for Burns",
+
+  "category": "first_aid",
+
+  "description": "Comprehensive guide on how to treat burns at home. Includes immediate steps, when to seek medical help, and prevention tips.",
+
+  "media_url": "https://example.com/videos/burns-first-aid.mp4",
+
+  "language": "en"
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/health-guides
+
+headers:
+
+  Authorization: Bearer <ngo_token>
+
+body:
+
+{
+
+  "title": "Nutrition Guide for Children",
+
+  "category": "nutrition",
+
+  "description": "Essential nutrition information for children's healthy development. Includes meal planning, essential nutrients, and common dietary concerns.",
+
+  "language": "ar"
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/health-guides?category=first_aid&language=en
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/health-guides?created_by_me=true
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/health-guides/1
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/health-guides/1
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+{
+
+  "description": "Updated description with additional safety tips and emergency contact information."
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/health-guides/1/approve
+
+headers:
+
+  Authorization: Bearer <admin_token>
+
+body:
+
+{
+
+  "approved": true
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: DELETE
+
+url: {{base_url}}/health-guides/1
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/public-health-alerts
+
+headers:
+
+  Authorization: Bearer <admin_token>
+
+body:
+
+{
+
+  "title": "Flu Season Alert",
+
+  "message": "High flu activity detected in the region. Please get vaccinated and practice good hygiene.",
+
+  "alert_type": "disease_outbreak",
+
+  "severity": "high",
+
+  "country": "Jordan",
+
+  "city": "Amman",
+
+  "expires_at": "2025-12-31T23:59:59Z"
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/public-health-alerts
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+{
+
+  "title": "Air Quality Warning",
+
+  "message": "Poor air quality detected. People with respiratory conditions should avoid outdoor activities.",
+
+  "alert_type": "air_quality",
+
+  "severity": "moderate",
+
+  "country": "Jordan",
+
+  "city": "Irbid"
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/public-health-alerts?severity=critical&country=Jordan
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/public-health-alerts?alert_type=disease_outbreak&city=Amman
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/public-health-alerts?my_alerts=true
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/public-health-alerts/1
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/public-health-alerts/1
+
+headers:
+
+  Authorization: Bearer <admin_token>
+
+body:
+
+{
+
+  "is_active": false,
+
+  "message": "Updated message with new information and recommendations."
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: DELETE
+
+url: {{base_url}}/public-health-alerts/1
+
+headers:
+
+  Authorization: Bearer <admin_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
