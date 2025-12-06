@@ -1,0 +1,621 @@
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/medicine-requests
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+{
+
+  "patient_id": 10,
+
+  "item_name_requested": "Paracetamol 500mg",
+
+  "quantity_needed": 20,
+
+  "delivery_location": "123 Main St, City",
+
+  "notes": "Urgent need"
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/medicine-requests?has_inventory=true&status=available&page=1&limit=20&sort_by=requested_date&sort_order=desc
+
+headers:
+
+  Authorization: Bearer <hospital_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/medicine-requests/1
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/medicine-requests/1/accept
+
+headers:
+
+  Authorization: Bearer <hospital_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/medicine-requests/1/reject
+
+headers:
+
+  Authorization: Bearer <hospital_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/medicine-requests/1/fulfill
+
+headers:
+
+  Authorization: Bearer <hospital_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/medicine-requests/1/cancel
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/medicine-requests/1
+
+headers:
+
+  Authorization: Bearer <hospital_token>
+
+body:
+
+{
+
+  "notes": "Item will be delivered by courier on Monday morning"
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/anonymous-sessions
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+{
+
+  "therapist_id": 9,
+
+  "started_at": "2025-01-15T10:00:00Z",
+
+  "pseudo_patient_name": "AnonymousSeeker123"
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/anonymous-sessions
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+{
+
+  "therapist_id": 9,
+
+  "started_at": "2025-01-15T14:00:00Z"
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/anonymous-sessions?session_token=550e8400-e29b-41d4-a716-446655440000
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/anonymous-sessions?session_token=550e8400-e29b-41d4-a716-446655440000,660e8400-e29b-41d4-a716-446655440001
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/anonymous-sessions
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/anonymous-sessions/pending
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/anonymous-sessions/1
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/anonymous-sessions/1?session_token=550e8400-e29b-41d4-a716-446655440000
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/anonymous-sessions/1/accept
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/anonymous-sessions/1/end
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/anonymous-sessions/1/end?session_token=550e8400-e29b-41d4-a716-446655440000
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/anonymous-messages?session_token=550e8400-e29b-41d4-a716-446655440000
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+{
+
+  "session_id": 1,
+
+  "message_text": "Hello, I've been feeling very anxious lately and need someone to talk to."
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/anonymous-messages
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+{
+
+  "session_id": 1,
+
+  "message_text": "Hello, I'm here to help. Can you tell me more about what's been causing your anxiety?"
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/anonymous-messages?session_id=1&session_token=550e8400-e29b-41d4-a716-446655440000
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/anonymous-messages?session_id=1
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/anonymous-messages/1?session_token=550e8400-e29b-41d4-a716-446655440000
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/anonymous-messages/1
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/inventory-registry
+
+headers:
+
+  Authorization: Bearer <hospital_token>
+
+body:
+
+{
+
+  "name": "Paracetamol 500mg",
+
+  "type": "medicine",
+
+  "quantity_available": 100,
+
+  "total_quantity": 100,
+
+  "storage_location": "Pharmacy Storage A",
+
+  "condition": "good",
+
+  "expiry_date": "2026-12-31",
+
+  "source_id": 55
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/inventory-registry
+
+headers:
+
+  Authorization: Bearer <admin_token>
+
+body:
+
+{
+
+  "name": "Wheelchair Standard",
+
+  "type": "equipment",
+
+  "quantity_available": 5,
+
+  "total_quantity": 5,
+
+  "storage_location": "Equipment Storage Room",
+
+  "condition": "good",
+
+  "expiry_date": null,
+
+  "source_id": 3
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/inventory-registry?page=1&limit=20&type=medicine&condition=good&sort_by=created_at&sort_order=desc
+
+headers:
+
+  Authorization: Bearer <hospital_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/inventory-registry?expired_only=true&type=medicine&page=1&limit=10
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/inventory-registry/1
+
+headers:
+
+  Authorization: Bearer <hospital_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/inventory-registry/1
+
+headers:
+
+  Authorization: Bearer <hospital_token>
+
+body:
+
+{
+
+  "quantity_available": 80,
+
+  "storage_location": "Pharmacy Storage B - Refrigerated"
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/inventory-registry/1
+
+headers:
+
+  Authorization: Bearer <admin_token>
+
+body:
+
+{
+
+  "name": "Paracetamol 500mg Tablets",
+
+  "quantity_available": 150,
+
+  "total_quantity": 200,
+
+  "condition": "good"
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: DELETE
+
+url: {{base_url}}/inventory-registry/1
+
+headers:
+
+  Authorization: Bearer <hospital_token>
+
+body:
+
+null
+
+===END_ENDPOINT===

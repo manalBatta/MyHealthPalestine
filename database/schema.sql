@@ -99,7 +99,7 @@ CREATE TABLE `treatment_requests` (
   `sponsered` bool,
   `goal_amount` decimal(10,2),
   `raised_amount` decimal(10,2) DEFAULT 0,
-  `status` enum(open,funded,closed,cancelled) DEFAULT 'open',
+  `status` enum(open,funded,closed,cancelled) DEFAULT 'open',//funded is when total amount achieved is equal to goal_amount , closed is when the treatment has been applyed and the admin trasfered mony for treatment
   `language` varchar(255),
   `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp
@@ -108,6 +108,8 @@ CREATE TABLE `treatment_requests` (
 CREATE TABLE `recovery_updates` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `patient_id` int,
+  `treatment_request_id` int,
+  `consultation_id` int,
   `content` text,
   `file_url` varchar(255),
   `status` enum(improving,stable,critical,recovered),
@@ -335,6 +337,8 @@ ALTER TABLE `treatment_requests` ADD FOREIGN KEY (`doctor_id`) REFERENCES `users
 ALTER TABLE `treatment_requests` ADD FOREIGN KEY (`patient_id`) REFERENCES `users` (`id`);
 
 ALTER TABLE `recovery_updates` ADD FOREIGN KEY (`patient_id`) REFERENCES `users` (`id`);
+ALTER TABLE `recovery_updates` ADD FOREIGN KEY (`treatment_request_id`) REFERENCES `treatment_requests` (`id`);
+ALTER TABLE `recovery_updates` ADD FOREIGN KEY (`consultation_id`) REFERENCES `consultations` (`id`);
 
 ALTER TABLE `donations` ADD FOREIGN KEY (`treatment_request_id`) REFERENCES `treatment_requests` (`id`);
 

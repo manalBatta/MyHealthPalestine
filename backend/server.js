@@ -31,25 +31,83 @@ cleanupExpiredTokens();
 // Schedule cleanup every hour (optional - can be adjusted)
 setInterval(cleanupExpiredTokens, 60 * 60 * 1000);
 
+// Clean up past, unbooked consultation slots
+const cleanupExpiredSlots = () => {
+  db.query(
+    "DELETE FROM consultation_slots WHERE is_booked = FALSE AND consultation_id IS NULL AND end_datetime < NOW()",
+    (err, results) => {
+      if (err) {
+        console.error("Error cleaning up expired slots:", err);
+      } else if (results.affectedRows) {
+        console.log(`Cleaned up ${results.affectedRows} expired slots`);
+      }
+    }
+  );
+};
+
+// Run slot cleanup every hour
+setInterval(cleanupExpiredSlots, 60 * 60 * 1000);
+
+// Check and update expired medicines
+const checkExpiredMedicines = () => {
+  db.query(
+    `UPDATE inventory_registry 
+     SET \`condition\` = 'expired' 
+     WHERE type = 'medicine' 
+     AND expiry_date < CURDATE() 
+     AND \`condition\` != 'expired'`,
+    (err, results) => {
+      if (err) {
+        console.error("Error checking expired medicines:", err);
+      } else if (results.affectedRows) {
+        console.log(`Updated ${results.affectedRows} expired medicines`);
+      }
+    }
+  );
+};
+
+// Run expired medicine check on startup and daily
+checkExpiredMedicines();
+setInterval(checkExpiredMedicines, 24 * 60 * 60 * 1000); // Every 24 hours
+
 // Routes
 const usersRoutes = require("./routes/users.js");
 const consultationsRoutes = require("./routes/consultations.js");
+const consultationSlotsRoutes = require("./routes/consultationSlots.js");
 const mentalHealthRoutes = require("./routes/mentalHealthConsultations.js");
 const authRoutes = require("./routes/auth.js");
 const connectionsRoutes = require("./routes/connections.js");
 const messagesRoutes = require("./routes/messages.js");
 const treatmentRequestsRoutes = require("./routes/treatmentRequests.js");
+const donationsRoutes = require("./routes/donations.js");
+const sponsorshipVerificationRoutes = require("./routes/sponsorshipVerification.js");
+const recoveryUpdatesRoutes = require("./routes/recoveryUpdates.js");
+const medicineRequestsRoutes = require("./routes/medicineRequests.js");
+const anonymousSessionsRoutes = require("./routes/anonymousSessions.js");
+const anonymousMessagesRoutes = require("./routes/anonymousMessages.js");
+const inventoryRegistryRoutes = require("./routes/inventoryRegistry.js");
 
 // Use base_url in the route paths
 const baseUrlPath = new URL(global.base_url).pathname.replace(/\/$/, "");
 
 app.use(`${baseUrlPath}/users`, usersRoutes);
 app.use(`${baseUrlPath}/consultations`, consultationsRoutes);
+app.use(`${baseUrlPath}/consultation-slots`, consultationSlotsRoutes);
 app.use(`${baseUrlPath}/mental-health-consultations`, mentalHealthRoutes);
 app.use(`${baseUrlPath}/auth`, authRoutes);
 app.use(`${baseUrlPath}/connections`, connectionsRoutes);
 app.use(`${baseUrlPath}/messages`, messagesRoutes);
 app.use(`${baseUrlPath}/treatment-requests`, treatmentRequestsRoutes);
+app.use(`${baseUrlPath}/donations`, donationsRoutes);
+app.use(
+  `${baseUrlPath}/sponsorship-verifications`,
+  sponsorshipVerificationRoutes
+);
+app.use(`${baseUrlPath}/recovery-updates`, recoveryUpdatesRoutes);
+app.use(`${baseUrlPath}/medicine-requests`, medicineRequestsRoutes);
+app.use(`${baseUrlPath}/anonymous-sessions`, anonymousSessionsRoutes);
+app.use(`${baseUrlPath}/anonymous-messages`, anonymousMessagesRoutes);
+app.use(`${baseUrlPath}/inventory-registry`, inventoryRegistryRoutes);
 
 const server = http.createServer(app);
 

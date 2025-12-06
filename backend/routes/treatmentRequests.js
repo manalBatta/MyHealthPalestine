@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const db = require("../db.js");
 const authenticateToken = require("../middleware/auth.js");
+const requireRole = require("../middleware/roleCheck.js");
 
 const SPONSORED_TYPES = [
   "surgery",
@@ -84,9 +85,7 @@ router.post("/", authenticateToken, async (req, res) => {
     }
 
     const resolvedDoctorId =
-      req.user.role === "doctor"
-        ? req.user.id
-        : doctor_id || req.user.id;
+      req.user.role === "doctor" ? req.user.id : doctor_id || req.user.id;
 
     if (!resolvedDoctorId) {
       return res.status(400).json({ error: "doctor_id is required" });
@@ -351,100 +350,129 @@ router.put("/:id", authenticateToken, async (req, res) => {
   }
 });
 
-router.get(
-  "/donations/browse",
-  authenticateToken,
-  async (req, res) => {
-    try {
-      const {
-        doctor_id,
-        patient_id,
-        treatment_type,
-        min_remaining,
-        max_remaining,
-        status = "open",
-        search,
-        page = 1,
-        limit = 20,
-      } = req.query;
+router.get("/donations/browse", authenticateToken, async (req, res) => {
+  try {
+    const {
+      doctor_id,
+      patient_id,
+      treatment_type,
+      min_remaining,
+      max_remaining,
+      status = "open",
+      search,
+      page = 1,
+      limit = 20,
+    } = req.query;
 
-      const pageNum = parseInt(page, 10);
-      const limitNum = parseInt(limit, 10);
+    const pageNum = parseInt(page, 10);
+    const limitNum = parseInt(limit, 10);
 
-      if (Number.isNaN(pageNum) || pageNum < 1) {
-        return res.status(400).json({ error: "Invalid page number" });
-      }
-      if (Number.isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
-        return res
-          .status(400)
-          .json({ error: "Invalid limit. Must be between 1 and 100" });
-      }
+    if (Number.isNaN(pageNum) || pageNum < 1) {
+      return res.status(400).json({ error: "Invalid page number" });
+    }
+    if (Number.isNaN(limitNum) || limitNum < 1 || limitNum > 100) {
+      return res
+        .status(400)
+        .json({ error: "Invalid limit. Must be between 1 and 100" });
+    }
 
-      const conditions = ["sponsered = TRUE"];
-      const params = [];
+    const conditions = ["sponsered = TRUE"];
+    const params = [];
 
-      if (status) {
-        conditions.push("status = ?");
-        params.push(status);
-      }
+    if (status) {
+      conditions.push("status = ?");
+      params.push(status);
+    }
 
-      if (doctor_id) {
-        conditions.push("doctor_id = ?");
-        params.push(doctor_id);
-      }
+    if (doctor_id) {
+      conditions.push("doctor_id = ?");
+      params.push(doctor_id);
+    }
 
-      if (patient_id) {
-        conditions.push("patient_id = ?");
-        params.push(patient_id);
-      }
+    if (patient_id) {
+      conditions.push("patient_id = ?");
+      params.push(patient_id);
+    }
 
-      if (treatment_type) {
-        conditions.push("treatment_type = ?");
-        params.push(treatment_type);
-      }
+    if (treatment_type) {
+      conditions.push("treatment_type = ?");
+      params.push(treatment_type);
+    }
 
-      const remainingExpr = "(goal_amount - raised_amount)";
-      if (min_remaining) {
-        conditions.push(`${remainingExpr} >= ?`);
-        params.push(min_remaining);
-      }
+    const remainingExpr = "(goal_amount - raised_amount)";
+    if (min_remaining) {
+      conditions.push(`${remainingExpr} >= ?`);
+      params.push(min_remaining);
+    }
 
-      if (max_remaining) {
-        conditions.push(`${remainingExpr} <= ?`);
-        params.push(max_remaining);
-      }
+    if (max_remaining) {
+      conditions.push(`${remainingExpr} <= ?`);
+      params.push(max_remaining);
+    }
 
-      if (search) {
-        conditions.push("(content LIKE ? OR description LIKE ?)");
-        params.push(`%${search}%`, `%${search}%`);
-      }
+    if (search) {
+      conditions.push("(content LIKE ? OR description LIKE ?)");
+      params.push(`%${search}%`, `%${search}%`);
+    }
 
-      const whereClause = `WHERE ${conditions.join(" AND ")}`;
+    const whereClause = `WHERE ${conditions.join(" AND ")}`;
 
-      const data = await runQuery(
-        `SELECT *,
+    const data = await runQuery(
+      `SELECT *,
                 (goal_amount - raised_amount) AS remaining_amount
          FROM treatment_requests
          ${whereClause}
          ORDER BY remaining_amount DESC
          LIMIT ?
          OFFSET ?`,
-        [...params, limitNum, (pageNum - 1) * limitNum]
+      [...params, limitNum, (pageNum - 1) * limitNum]
+    );
+
+    res.json({
+      message: "Sponsored treatment requests retrieved successfully",
+      data,
+      meta: { page: pageNum, limit: limitNum },
+    });
+  } catch (error) {
+    console.error("Browse treatment requests error:", error);
+    res.status(500).json({
+      error: "Internal server error while browsing treatment requests",
+    });
+  }
+});
+
+// DELETE /treatment-requests/:id - Admin only
+router.delete(
+  "/:id",
+  authenticateToken,
+  requireRole("admin"),
+  async (req, res) => {
+    try {
+      const requestId = req.params.id;
+
+      const results = await runQuery(
+        "SELECT id FROM treatment_requests WHERE id = ?",
+        [requestId]
       );
 
+      if (results.length === 0) {
+        return res.status(404).json({ error: "Treatment request not found" });
+      }
+
+      await runQuery("DELETE FROM treatment_requests WHERE id = ?", [
+        requestId,
+      ]);
+
       res.json({
-        message: "Sponsored treatment requests retrieved successfully",
-        data,
-        meta: { page: pageNum, limit: limitNum },
+        message: "Treatment request deleted successfully",
       });
     } catch (error) {
-      console.error("Browse treatment requests error:", error);
+      console.error("Delete treatment request error:", error);
       res.status(500).json({
-        error: "Internal server error while browsing treatment requests",
+        error: "Internal server error while deleting treatment request",
       });
     }
   }
 );
 
 module.exports = router;
-
