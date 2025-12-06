@@ -619,3 +619,277 @@ body:
 null
 
 ===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/workshops
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+{
+
+  "title": "Diabetes Management Workshop",
+
+  "topic": "Chronic Disease Management",
+
+  "description": "Learn about managing diabetes through diet, exercise, and medication. This workshop covers blood sugar monitoring, insulin management, and lifestyle modifications.",
+
+  "mode": "in_person",
+
+  "location": "Community Health Center, Room 201, 123 Main St",
+
+  "date": "2025-02-15T14:00:00Z",
+
+  "duration": 90
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/workshops
+
+headers:
+
+  Authorization: Bearer <ngo_token>
+
+body:
+
+{
+
+  "title": "Mental Health First Aid Online",
+
+  "topic": "Mental Health Awareness",
+
+  "description": "An online workshop teaching basic mental health first aid skills. Learn how to recognize signs of mental health issues and provide initial support.",
+
+  "mode": "online",
+
+  "location": null,
+
+  "date": "2025-02-20T10:00:00Z",
+
+  "duration": 120
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/workshops
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/workshops?created_by_me=true
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/workshops/1
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/workshops/1
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+{
+
+  "description": "Updated description with more details about the workshop content and learning objectives.",
+
+  "duration": 105
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/workshops/1/approve
+
+headers:
+
+  Authorization: Bearer <admin_token>
+
+body:
+
+{
+
+  "approved": true
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: DELETE
+
+url: {{base_url}}/workshops/1
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: POST
+
+url: {{base_url}}/workshop-registrations
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+{
+
+  "workshop_id": 1
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/workshop-registrations?workshop_id=1
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/workshop-registrations
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: GET
+
+url: {{base_url}}/workshop-registrations/1
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: PUT
+
+url: {{base_url}}/workshop-registrations/1/attendance
+
+headers:
+
+  Authorization: Bearer <doctor_token>
+
+body:
+
+{
+
+  "attended": true
+
+}
+
+===END_ENDPOINT===
+
+===BEGIN_ENDPOINT===
+
+method: DELETE
+
+url: {{base_url}}/workshop-registrations/1
+
+headers:
+
+  Authorization: Bearer <patient_token>
+
+body:
+
+null
+
+===END_ENDPOINT===

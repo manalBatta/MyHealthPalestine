@@ -86,6 +86,8 @@ const medicineRequestsRoutes = require("./routes/medicineRequests.js");
 const anonymousSessionsRoutes = require("./routes/anonymousSessions.js");
 const anonymousMessagesRoutes = require("./routes/anonymousMessages.js");
 const inventoryRegistryRoutes = require("./routes/inventoryRegistry.js");
+const workshopsRoutes = require("./routes/workshops.js");
+const workshopRegistrationsRoutes = require("./routes/workshopRegistrations.js");
 
 // Use base_url in the route paths
 const baseUrlPath = new URL(global.base_url).pathname.replace(/\/$/, "");
@@ -108,6 +110,8 @@ app.use(`${baseUrlPath}/medicine-requests`, medicineRequestsRoutes);
 app.use(`${baseUrlPath}/anonymous-sessions`, anonymousSessionsRoutes);
 app.use(`${baseUrlPath}/anonymous-messages`, anonymousMessagesRoutes);
 app.use(`${baseUrlPath}/inventory-registry`, inventoryRegistryRoutes);
+app.use(`${baseUrlPath}/workshops`, workshopsRoutes);
+app.use(`${baseUrlPath}/workshop-registrations`, workshopRegistrationsRoutes);
 
 const server = http.createServer(app);
 
