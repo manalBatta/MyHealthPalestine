@@ -3,6 +3,7 @@ const router = express.Router();
 const db = require("../db.js");
 const authenticateToken = require("../middleware/auth.js");
 const requireRole = require("../middleware/roleCheck.js");
+const { sendEmail } = require("../utils/mailer.js");
 
 // Validate that authenticateToken is a function
 if (typeof authenticateToken !== "function") {
@@ -24,6 +25,18 @@ const queryConnection = (connection, sql, params = []) =>
       if (err) reject(err);
       else resolve(results);
     });
+  });
+
+const getUserById = (id) =>
+  new Promise((resolve, reject) => {
+    db.query(
+      "SELECT id, name, email, role FROM users WHERE id = ?",
+      [id],
+      (err, results) => {
+        if (err) reject(err);
+        else resolve(results[0] || null);
+      }
+    );
   });
 
 // POST /consultations - Patient creates a new consultation
@@ -142,6 +155,32 @@ router.post("/", authenticateToken, async (req, res) => {
     );
 
     await queryConnection(connection, "COMMIT");
+
+    // Fire-and-forget email notifications
+    (async () => {
+      try {
+        const patient = await getUserById(userId);
+        const doctor = await getUserById(doctor_id);
+        if (patient?.email) {
+          await sendEmail({
+            to: patient.email,
+            subject: "[HealthPal] Consultation request submitted",
+            text: `Your consultation request with Dr. ${doctor?.name || doctor_id} was submitted. Status: pending.`,
+            html: `<p>Your consultation request with Dr. <strong>${doctor?.name || doctor_id}</strong> was submitted.</p><p>Status: <strong>pending</strong>.</p>`,
+          });
+        }
+        if (doctor?.email) {
+          await sendEmail({
+            to: doctor.email,
+            subject: "[HealthPal] New consultation request",
+            text: `You received a new consultation request from ${patient?.name || "a patient"}. Mode: ${mode}. Slot: ${slot_id}.`,
+            html: `<p>You received a new consultation request from <strong>${patient?.name || "a patient"}</strong>.</p><p>Mode: <strong>${mode}</strong><br/>Slot ID: <strong>${slot_id}</strong></p>`,
+          });
+        }
+      } catch (err) {
+        console.error("[consultations] email notify error:", err?.message || err);
+      }
+    })();
 
     res.status(201).json({
       message: "Consultation created successfully",
@@ -325,6 +364,35 @@ router.put("/:id", authenticateToken, async (req, res) => {
         }
       );
     });
+
+    // Fire-and-forget email notifications for status changes
+    (async () => {
+      try {
+        const patient = await getUserById(updatedConsultation.patient_id);
+        const doctor = await getUserById(updatedConsultation.doctor_id);
+        const statusText = updatedConsultation.status;
+
+        if (userRole === "doctor" && status && patient?.email) {
+          await sendEmail({
+            to: patient.email,
+            subject: `[HealthPal] Consultation ${statusText}`,
+            text: `Your consultation was ${statusText} by Dr. ${doctor?.name || doctor?.id}.`,
+            html: `<p>Your consultation was <strong>${statusText}</strong> by Dr. <strong>${doctor?.name || doctor?.id}</strong>.</p>`,
+          });
+        }
+
+        if (userRole === "patient" && status === "cancelled" && doctor?.email) {
+          await sendEmail({
+            to: doctor.email,
+            subject: "[HealthPal] Consultation cancelled by patient",
+            text: `The patient ${patient?.name || patient?.id} cancelled the consultation.`,
+            html: `<p>The patient <strong>${patient?.name || patient?.id}</strong> cancelled the consultation.</p>`,
+          });
+        }
+      } catch (err) {
+        console.error("[consultations] email notify error:", err?.message || err);
+      }
+    })();
 
     res.status(200).json({
       message: "Consultation updated successfully",

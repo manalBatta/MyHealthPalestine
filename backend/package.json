@@ -6,6 +6,7 @@
     "jigsawstack": "^0.3.7",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.15.3",
+    "postmark": "^4.0.5",
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
