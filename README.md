@@ -62,3 +62,68 @@ Ensure MySQL is running locally and env vars point to it.
 - Support Groups: `/support-groups`, `/support-group-members`, `/support-group-messages`
 - Anonymous Sessions: `/anonymous-sessions`, `/anonymous-messages`
 - Health Guides & Alerts: `/health-guides`, `/public-health-alerts`
+
+Folder PATH listing:
+C:.
+|   .dockerignore
+|   .env
+|   .gitignore
+|   docker-compose.env.example
+|   docker-compose.yml
+|   README.md
+|   tree.txt
+|   
++---backend
+|   |   db.js
+|   |   Dockerfile
+|   |   package-lock.json
+|   |   package.json
+|   |   server.js
+|   |   
+|   +---middleware
+|   |       auth.js
+|   |       roleCheck.js
+|   |       
+|   +---routes
+|   |       anonymousMessages.js
+|   |       anonymousSessions.js
+|   |       auth.js
+|   |       connections.js
+|   |       consultations.js
+|   |       consultationSlots.js
+|   |       donations.js
+|   |       healthGuides.js
+|   |       inventoryRegistry.js
+|   |       medicineRequests.js
+|   |       mentalHealthConsultations.js
+|   |       messages.js
+|   |       missionRegistrations.js
+|   |       missions.js
+|   |       publicHealthAlerts.js
+|   |       recoveryUpdates.js
+|   |       sponsorshipVerification.js
+|   |       stripeWebhook.js
+|   |       supportGroupMembers.js
+|   |       supportGroupMessages.js
+|   |       supportGroups.js
+|   |       surgicalMissions.js
+|   |       treatmentRequests.js
+|   |       users.js
+|   |       workshopRegistrations.js
+|   |       workshops.js
+|   |       
+|   \---utils
+|           mailer.js
+|           translator.js
+|           
+\---database
+    |   create_admin.js
+    |   create_admin.sql
+    |   schema.sql
+    |   seed.sql
+    |   
+    \---migrations
+            add_hospital_55_inventory.sql
+            add_recovery_updates_links.sql
+            
+
