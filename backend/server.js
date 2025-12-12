@@ -9,6 +9,13 @@ require("dotenv").config();
 
 // Global base_url variable
 global.base_url = process.env.BASE_URL || `http://localhost:${port}/healthpal`;
+
+// Stripe webhook must be registered BEFORE express.json() middleware
+// because it needs raw body for signature verification
+const stripeWebhookRoutes = require("./routes/stripeWebhook.js");
+const baseUrlPath = new URL(global.base_url).pathname.replace(/\/$/, "");
+app.use(`${baseUrlPath}/stripe-webhook`, stripeWebhookRoutes);
+
 app.use(express.json());
 
 // Clean up expired tokens from blacklist (runs on startup and can be scheduled)
@@ -121,9 +128,7 @@ const surgicalMissionsRoutes = require("./routes/surgicalMissions.js");
 const healthGuidesRoutes = require("./routes/healthGuides.js");
 const publicHealthAlertsRoutes = require("./routes/publicHealthAlerts.js");
 
-// Use base_url in the route paths
-const baseUrlPath = new URL(global.base_url).pathname.replace(/\/$/, "");
-
+// Use base_url in the route paths (already defined above for webhook)
 app.use(`${baseUrlPath}/users`, usersRoutes);
 app.use(`${baseUrlPath}/consultations`, consultationsRoutes);
 app.use(`${baseUrlPath}/consultation-slots`, consultationSlotsRoutes);

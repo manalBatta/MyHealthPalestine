@@ -1,7 +1,10 @@
 const express = require("express");
 const router = express.Router();
+require("dotenv").config();
 const db = require("../db.js");
 const authenticateToken = require("../middleware/auth.js");
+
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 const runQuery = (sql, params = []) =>
   new Promise((resolve, reject) => {
@@ -11,7 +14,7 @@ const runQuery = (sql, params = []) =>
     });
   });
 
-// POST /donations - Create a donation for a sponsored treatment request
+// POST /donations - Create Payment Intent for a sponsored treatment request
 router.post("/", authenticateToken, async (req, res) => {
   try {
     const donorId = req.user.id;
@@ -53,7 +56,8 @@ router.post("/", authenticateToken, async (req, res) => {
 
     if (request.status !== "open" && request.status !== "funded") {
       return res.status(400).json({
-        error: "Donations can only be made to open or partially funded requests",
+        error:
+          "Donations can only be made to open or partially funded requests",
       });
     }
 
@@ -67,77 +71,39 @@ router.post("/", authenticateToken, async (req, res) => {
       });
     }
 
-    const connection = await new Promise((resolve, reject) => {
-      db.getConnection((err, conn) => {
-        if (err) reject(err);
-        else resolve(conn);
+    // Check if Stripe is configured
+    if (!process.env.STRIPE_SECRET_KEY) {
+      return res.status(500).json({
+        error: "Payment processing is not configured",
       });
+    }
+
+    // Create Payment Intent
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: Math.round(numericAmount * 100), // Convert to cents
+      currency: "usd",
+      metadata: {
+        treatment_request_id: treatment_request_id.toString(),
+        donor_id: donorId.toString(),
+        amount: numericAmount.toString(),
+      },
     });
 
-    try {
-      await new Promise((resolve, reject) =>
-        connection.query("START TRANSACTION", (err) =>
-          err ? reject(err) : resolve()
-        )
-      );
-
-      const insertResult = await new Promise((resolve, reject) => {
-        connection.query(
-          `INSERT INTO donations
-             (treatment_request_id, donor_id, amount, donated_at)
-           VALUES (?, ?, ?, NOW())`,
-          [treatment_request_id, donorId, numericAmount],
-          (err, results) => {
-            if (err) reject(err);
-            else resolve(results);
-          }
-        );
-      });
-
-      const newRaised = Number(request.raised_amount || 0) + numericAmount;
-      const newStatus =
-        newRaised >= Number(request.goal_amount) ? "funded" : request.status;
-
-      await new Promise((resolve, reject) => {
-        connection.query(
-          `UPDATE treatment_requests
-             SET raised_amount = ?, status = ?, updated_at = NOW()
-           WHERE id = ?`,
-          [newRaised, newStatus, treatment_request_id],
-          (err, results) => {
-            if (err) reject(err);
-            else resolve(results);
-          }
-        );
-      });
-
-      await new Promise((resolve, reject) =>
-        connection.query("COMMIT", (err) =>
-          err ? reject(err) : resolve()
-        )
-      );
-
-      const [donation] = await runQuery(
-        "SELECT * FROM donations WHERE id = ?",
-        [insertResult.insertId]
-      );
-
-      res.status(201).json({
-        message: "Donation created successfully",
-        donation,
-      });
-    } catch (txError) {
-      await new Promise((resolve) =>
-        connection.query("ROLLBACK", () => resolve())
-      );
-      throw txError;
-    } finally {
-      connection.release();
-    }
+    res.status(200).json({
+      message: "Payment Intent created successfully",
+      client_secret: paymentIntent.client_secret,
+      payment_intent_id: paymentIntent.id,
+    });
   } catch (error) {
-    console.error("Create donation error:", error);
+    console.error("Create payment intent error:", error);
+    if (error.type === "StripeInvalidRequestError") {
+      return res.status(400).json({
+        error: "Invalid payment request",
+        details: error.message,
+      });
+    }
     res.status(500).json({
-      error: "Internal server error while creating donation",
+      error: "Internal server error while creating payment intent",
     });
   }
 });
@@ -279,5 +245,3 @@ router.get(
 );
 
 module.exports = router;
-
-

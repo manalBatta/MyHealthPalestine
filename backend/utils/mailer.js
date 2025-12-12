@@ -1,5 +1,5 @@
 const postmark = require("postmark");
-
+require("dotenv").config();
 const SEND_LIMIT_PER_DAY = 3; // per-recipient guardrail
 const dailyCounts = new Map();
 
@@ -15,8 +15,11 @@ let initialized = false;
 
 const initPostmark = () => {
   const token = process.env.POSTMARK_SERVER_TOKEN;
+  console.log(token);
   if (!token) {
-    console.warn("[mailer] POSTMARK_SERVER_TOKEN not set; emails will be skipped");
+    console.warn(
+      "[mailer] POSTMARK_SERVER_TOKEN not set; emails will be skipped"
+    );
     return false;
   }
   client = new postmark.ServerClient(token);
@@ -60,6 +63,10 @@ const sendEmail = async ({ to, subject, text, html }) => {
   const fromName = process.env.POSTMARK_FROM_NAME || "HealthPal";
   const from = `${fromName} <${fromEmail}>`;
 
+  // Extract domains for validation
+  const fromDomain = fromEmail.split("@")[1];
+  const toDomain = to.split("@")[1];
+
   if (!hasKey || !client) {
     console.info(
       `[mailer][log-only] to=${to} subject="${subject}" text="${text}"`
@@ -78,12 +85,22 @@ const sendEmail = async ({ to, subject, text, html }) => {
     bumpCount(to);
     return { sent: true };
   } catch (err) {
-    console.error("[mailer] Postmark error:", err?.message || err);
-    return { error: true, message: err?.message || "postmark-error" };
+    const errorMsg = err?.message || err;
+    console.error("[mailer] Postmark error:", errorMsg);
+
+    // Provide helpful message for domain mismatch during pending approval
+    if (errorMsg.includes("pending approval") && fromDomain !== toDomain) {
+      console.warn(
+        `[mailer] Domain mismatch: From domain is "${fromDomain}" but recipient is "${toDomain}". ` +
+          `During Postmark pending approval, you can only send to addresses matching your From domain. ` +
+          `Use a test email like "test@${fromDomain}" or wait for Postmark account approval.`
+      );
+    }
+
+    return { error: true, message: errorMsg };
   }
 };
 
 module.exports = {
   sendEmail,
 };
-
