@@ -1,0 +1,67 @@
+services:
+  # MySQL Database Service
+  mysql:
+    image: mysql:8.0
+    container_name: healthpal-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-healthpal}
+      MYSQL_USER: ${MYSQL_USER:-healthpal_user}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-healthpal_password}
+    ports:
+      - "${MYSQL_PORT:-3307}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+      - ./database/migrations:/docker-entrypoint-initdb.d/migrations:ro
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - healthpal-network
+
+  # Backend API Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: healthpal-backend
+    restart: unless-stopped
+    ports:
+      - "${BACKEND_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - BASE_URL=${BASE_URL:-http://localhost:3000/healthpal}
+      - DB_HOST=mysql
+      - DB_USER=${MYSQL_USER:-healthpal_user}
+      - DB_PASSWORD=${MYSQL_PASSWORD:-healthpal_password}
+      - DB_NAME=${MYSQL_DATABASE:-healthpal}
+      - DB_PORT=3306
+      - JWT_SECRET=${JWT_SECRET:-your-secret-key-change-in-production}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - POSTMARK_SERVER_TOKEN=${POSTMARK_SERVER_TOKEN}
+      - POSTMARK_FROM=${POSTMARK_FROM:-no-reply@healthpal.com}
+      - POSTMARK_FROM_NAME=${POSTMARK_FROM_NAME:-HealthPal}
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - healthpal-network
+    command: sh -c "npm install && node server.js"
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  healthpal-network:
+    driver: bridge
+

@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const db = require("../db.js");
+require("dotenv").config();
 
 // JWT Authentication Middleware with Token Blacklist Check
 const authenticateToken = async (req, res, next) => {

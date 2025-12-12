@@ -4,15 +4,15 @@ CREATE TABLE `users` (
   `email` varchar(255),
   `contact_phone` varchar(255),
   `password_hash` varchar(255),
-  `role` enum(patient,doctor,donor,ngo,admin,hospital),
-  `specialty` varchar(255), //doctor specialty (optional)
+  `role` enum('patient','doctor','donor','ngo','admin','hospital'),
+  `specialty` varchar(255), -- doctor specialty (optional)
   `language_pref` varchar(255),
   `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp,
-  `official_document_url` varchar(255),//doctor official document url (optional)
-  `registration_number` varchar(255),//doctor registration number (optional)
-  `website_url` varchar(255),//NGOs /hospitals  website url (optional)
-  `verification_status` enum(none,requested,verified,rejected) DEFAULT 'none',
+  `official_document_url` varchar(255), -- doctor official document url (optional)
+  `registration_number` varchar(255), -- doctor registration number (optional)
+  `website_url` varchar(255), -- NGOs /hospitals  website url (optional)
+  `verification_status` enum('none','requested','verified','rejected') DEFAULT 'none',
   `verification_requested_at` timestamp,
   `verified_at` timestamp
 );
@@ -22,8 +22,8 @@ CREATE TABLE `consultations` (
   `patient_id` int,
   `doctor_id` int,
   `specialty` varchar(255),
-  `status` enum(pending,confirmed,completed,cancelled),
-  `mode` enum(video,audio,chat),
+  `status` enum('pending','confirmed','completed','cancelled'),
+  `mode` enum('video','audio','chat'),
   `notes` text,
   `slot_id` int,
   `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
@@ -33,10 +33,10 @@ CREATE TABLE `consultations` (
 CREATE TABLE `mental_health_consultations` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `consultation_id` int UNIQUE,
-  `trauma_type` enum(war_trauma,loss,childhood,stress,other),
-  `severity_level` enum(mild,moderate,severe,critical),
+  `trauma_type` enum('war_trauma','loss','childhood','stress','other'),
+  `severity_level` enum('mild','moderate','severe','critical'),
   `anonymity` bool DEFAULT false,
-  `age_group` enum(child,teen,adult,senior),
+  `age_group` enum('child','teen','adult','senior'),
   `session_focus` text,
   `follow_up_required` bool DEFAULT false,
   `follow_up_notes` text,
@@ -49,7 +49,7 @@ CREATE TABLE `connections` (
   `patient_id` int,
   `doctor_id` int,
   `connected_at` timestamp,
-  `status` enum(active,inactive)
+  `status` enum('active','inactive')
 );
 
 CREATE TABLE `messages` (
@@ -87,19 +87,19 @@ CREATE TABLE `treatment_requests` (
   `consultation_id` int,
   `doctor_id` int,
   `patient_id` int,
-  `treatment_type` enum(note,prescription,attachment,surgery,cancer_treatment,dialysis,rehabilitation),
+  `treatment_type` enum('note','prescription','attachment','surgery','cancer_treatment','dialysis','rehabilitation'),
   `content` text,
   `medicine_name` varchar(255),
   `dosage` varchar(255),
   `frequency` varchar(255),
   `duration` varchar(255),
-  `attachment_type` enum(image,lab_result,other),
+  `attachment_type` enum('image','lab_result','other'),
   `file_url` varchar(255),
   `description` text,
   `sponsered` bool,
   `goal_amount` decimal(10,2),
   `raised_amount` decimal(10,2) DEFAULT 0,
-  `status` enum(open,funded,closed,cancelled) DEFAULT 'open',//funded is when total amount achieved is equal to goal_amount , closed is when the treatment has been applyed and the admin trasfered mony for treatment
+  `status` enum('open','funded','closed','cancelled') DEFAULT 'open', -- funded is when total amount achieved is equal to goal_amount , closed is when the treatment has been applyed and the admin trasfered mony for treatment
   `language` varchar(255),
   `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp
@@ -112,7 +112,7 @@ CREATE TABLE `recovery_updates` (
   `consultation_id` int,
   `content` text,
   `file_url` varchar(255),
-  `status` enum(improving,stable,critical,recovered),
+  `status` enum('improving','stable','critical','recovered'),
   `created_at` timestamp DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -143,7 +143,7 @@ CREATE TABLE `medicine_requests` (
   `quantity_needed` int,
   `delivery_location` varchar(255),
   `assigned_source_id` int,
-  `status` enum(pending,available,in_progress,fulfilled,rejected,cancelled) DEFAULT 'pending',
+  `status` enum('pending','available','in_progress','fulfilled','rejected','cancelled') DEFAULT 'pending',
   `requested_date` timestamp DEFAULT (current_timestamp),
   `fulfilled_by` int,
   `fulfilled_date` timestamp,
@@ -153,11 +153,11 @@ CREATE TABLE `medicine_requests` (
 CREATE TABLE `inventory_registry` (
   `item_id` int PRIMARY KEY AUTO_INCREMENT,
   `name` varchar(255),
-  `type` enum(medicine,equipment),
+  `type` enum('medicine','equipment'),
   `quantity_available` int,
   `total_quantity` int,
   `storage_location` varchar(255),
-  `condition` enum(good,needs_repair,out_of_service,expired,damaged),
+  `condition` enum('good','needs_repair','out_of_service','expired','damaged'),
   `expiry_date` date,
   `source_id` int,
   `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
@@ -167,7 +167,7 @@ CREATE TABLE `inventory_registry` (
 CREATE TABLE `health_guides` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `title` varchar(255),
-  `category` enum(first_aid,chronic_illness,nutrition,maternal_care,mental_health,other),
+  `category` enum('first_aid','chronic_illness','nutrition','maternal_care','mental_health','other'),
   `description` text,
   `media_url` varchar(255),
   `language` varchar(255) DEFAULT 'ar',
@@ -182,8 +182,8 @@ CREATE TABLE `public_health_alerts` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `title` varchar(255),
   `message` text,
-  `alert_type` enum(disease_outbreak,air_quality,urgent_need,general),
-  `severity` enum(low,moderate,high,critical),
+  `alert_type` enum('disease_outbreak','air_quality','urgent_need','general'),
+  `severity` enum('low','moderate','high','critical'),
   `country` varchar(255),
   `city` varchar(255),
   `published_by` int,
@@ -197,7 +197,7 @@ CREATE TABLE `workshops` (
   `title` varchar(255),
   `topic` varchar(255),
   `description` text,
-  `mode` enum(online,in_person),
+  `mode` enum('online','in_person'),
   `location` varchar(255),
   `date` datetime,
   `duration` int,
@@ -219,9 +219,9 @@ CREATE TABLE `workshop_registrations` (
 CREATE TABLE `support_groups` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `title` varchar(255),
-  `topic` enum(chronic_illness,disability,loss,trauma,mental_health,other),
+  `topic` enum('chronic_illness','disability','loss','trauma','mental_health','other'),
   `description` text,
-  `mode` enum(online,in_person),
+  `mode` enum('online','in_person'),
   `meeting_link` varchar(255),
   `location` varchar(255),
   `created_by` int,
@@ -252,7 +252,7 @@ CREATE TABLE `anonymous_sessions` (
 CREATE TABLE `anonymous_messages` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
   `session_id` int,
-  `sender_role` enum(therapist,patient),
+  `sender_role` enum('therapist','patient'),
   `message_text` text,
   `created_at` timestamp DEFAULT CURRENT_TIMESTAMP
 );
@@ -269,7 +269,7 @@ CREATE TABLE `missions` (
   `registration_expiration` datetime,
   `slots_available` int,
   `slots_filled` int DEFAULT 0,
-  `status` enum(upcoming,ongoing,completed,cancelled) DEFAULT 'upcoming',
+  `status` enum('upcoming','ongoing','completed','cancelled') DEFAULT 'upcoming',
   `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp
 );
@@ -291,7 +291,7 @@ CREATE TABLE `surgical_missions` (
   `location` varchar(255),
   `start_datetime` datetime,
   `end_datetime` datetime,
-  `status` enum(upcoming,ongoing,completed,cancelled) DEFAULT 'upcoming',
+  `status` enum('upcoming','ongoing','completed','cancelled') DEFAULT 'upcoming',
   `created_at` timestamp DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp
 );

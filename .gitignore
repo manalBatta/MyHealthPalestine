@@ -69,6 +69,10 @@ temp/
 # Stripe
 stripe.log
 
+# Docker
+docker-compose.override.yml
+.docker/
+
 # Misc
 .cache/
 .parcel-cache/
